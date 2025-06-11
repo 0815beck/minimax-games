@@ -1,16 +1,15 @@
 type Player = "HUMAN" | "MACHINE";
+type Symbol = "X" | "O";
+type Position = { row: number; column: number };
+type Difficulty = "EASY" | "HARD";
 
 function invertPlayer(player: Player): Player {
   return player === "HUMAN" ? "MACHINE" : "HUMAN";
 }
 
-type Symbol = "X" | "O";
-
 function invertSymbol(symbol: Symbol): Symbol {
   return symbol === "X" ? "O" : "X";
 }
 
-type Position = { row: number; column: number };
-
-export type { Player, Symbol, Position };
+export type { Difficulty, Player, Symbol, Position };
 export { invertPlayer, invertSymbol };

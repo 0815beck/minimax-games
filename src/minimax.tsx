@@ -1,7 +1,7 @@
 import type { Symbol, Player, Position } from "./types";
 import { invertPlayer, invertSymbol } from "./types";
 
-function findWinner(board: (Symbol | null)[][]): Symbol | "DRAW" | null {
+function getWinningSymbol(board: (Symbol | null)[][]): Symbol | "DRAW" | null {
   let boardIsFull = true;
   for (let row = 0; row < 3; row++) {
     for (let column = 0; column < 3; column++) {
@@ -58,7 +58,7 @@ function minimax(
   nextSymbol: Symbol,
   nextPlayer: Player
 ): number {
-  const winner: Symbol | "DRAW" | null = findWinner(board);
+  const winner: Symbol | "DRAW" | null = getWinningSymbol(board);
   if (winner === "DRAW") {
     return 0;
   }
@@ -128,4 +128,4 @@ function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
   return positionScoreTable.sort((a, b) => b.score - a.score)[0].position;
 }
 
-export { findWinner, bestMove };
+export { getWinningSymbol, bestMove };

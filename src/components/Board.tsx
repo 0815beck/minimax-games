@@ -4,7 +4,7 @@ import type { MouseEvent } from "react";
 
 function Board(props: {
   nextPlayer: Player | null;
-  winner: Symbol | "DRAW" | null;
+  gameOver: boolean;
   board: (Symbol | null)[][];
   onFieldClick: (
     position: Position
@@ -14,9 +14,8 @@ function Board(props: {
   for (let row = 0; row < 3; row++) {
     for (let column = 0; column < 3; column++) {
       let disabled =
-        props.nextPlayer === "MACHINE" ||
-        props.nextPlayer === null ||
-        props.winner !== null ||
+        props.nextPlayer !== "HUMAN" ||
+        props.gameOver === true ||
         props.board[row][column] !== null
           ? true
           : false;
@@ -31,12 +30,12 @@ function Board(props: {
   }
 
   return (
-    <div
-      className={
-        "flex-grow max-w-9/10 sm:max-w-5/10 md:max-w-96 grid grid-cols-3 gap-2"
-      }
-    >
-      {fields}
+    <div className="w-full">
+      <div
+        className={"w-9/10 md:w-5/10 max-w-96 grid grid-cols-3 gap-2 m-auto"}
+      >
+        {fields}
+      </div>
     </div>
   );
 }
