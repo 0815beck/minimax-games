@@ -4,10 +4,10 @@ import type { Difficulty, Symbol, Player, Position } from "./types";
 import { invertPlayer, invertSymbol } from "./types";
 import type { MouseEvent } from "react";
 import { bestMove, getWinningSymbol } from "./minimax";
-import Game from "./sites/Game";
+import Game from "./sites/game/Game";
 import { useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
-import Settings from "./sites/Settings";
+import Settings from "./sites/settings/Settings";
 
 function App() {
   const [startPlayer, setStartPlayer] = useState<Player | null>(null);

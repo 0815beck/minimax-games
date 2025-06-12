@@ -1,1 +1,27 @@
-@import "tailwindcss";
+:root {
+  --teal: rgb(0, 32, 32);
+}
+
+body,
+main,
+#root {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+button,
+input,
+label,
+p {
+  all: unset;
+}
+
+label {
+  display: block;
+}
+
+#root {
+  color: white;
+  background-color: var(--teal);
+  font-family: sans-serif;
+}

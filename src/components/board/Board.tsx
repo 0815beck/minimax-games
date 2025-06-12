@@ -1,5 +1,5 @@
-import type { Symbol, Player, Position } from "../types";
-import Field from "./Field";
+import type { Symbol, Player, Position } from "../../types";
+import Field from "../field/Field";
 import type { MouseEvent } from "react";
 
 function Board(props: {
@@ -30,12 +30,8 @@ function Board(props: {
   }
 
   return (
-    <div className="w-full">
-      <div
-        className={"w-9/10 md:w-5/10 max-w-96 grid grid-cols-3 gap-2 m-auto"}
-      >
-        {fields}
-      </div>
+    <div>
+      <div>{fields}</div>
     </div>
   );
 }

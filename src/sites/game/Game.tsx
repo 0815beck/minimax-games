@@ -1,7 +1,7 @@
-import Board from "../components/Board";
-import type { Player, Symbol, Position } from "../types";
+import Board from "../../components/board/Board";
+import type { Player, Symbol, Position } from "../../types";
 import type { MouseEvent } from "react";
-import { getWinningSymbol } from "../minimax";
+import { getWinningSymbol } from "../../minimax";
 
 function Game(props: {
   nextPlayer: Player | null;
@@ -31,12 +31,8 @@ function Game(props: {
   }
 
   return (
-    <div
-      className={
-        "w-screen h-screen flex flex-col items-stretch justify-center bg-slate-800"
-      }
-    >
-      <p className="mb-12 text-2xl text-center text-white">{statusMessage}</p>
+    <div>
+      <p>{statusMessage}</p>
       <Board {...props} />
     </div>
   );

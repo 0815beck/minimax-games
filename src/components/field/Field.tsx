@@ -1,4 +1,4 @@
-import type { Symbol } from "../types.tsx";
+import type { Symbol } from "../../types.ts";
 import type { MouseEvent } from "react";
 
 function Field(props: {
@@ -6,18 +6,6 @@ function Field(props: {
   symbol: Symbol | null;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
-  let buttonStyle: string = `
-    aspect-square min-w-16
-    bg-slate-800 shadow-[0px_0px_4px_rgba(255,255,255,0.7)]
-  `;
-
-  if (!props.disabled) {
-    buttonStyle =
-      buttonStyle +
-      " hover:bg-slate-700" +
-      "hover:shadow-[0px_0px_8px_rgba(255,255,255,0.7)]";
-  }
-
   let symbolSvg = <></>;
   if (props.symbol === "X") {
     symbolSvg = (
@@ -58,11 +46,7 @@ function Field(props: {
   }
 
   return (
-    <button
-      onClick={props.onClick}
-      className={buttonStyle}
-      disabled={props.disabled}
-    >
+    <button onClick={props.onClick} disabled={props.disabled}>
       {symbolSvg}
     </button>
   );
