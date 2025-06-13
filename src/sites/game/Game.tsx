@@ -3,6 +3,7 @@ import type { Player, Symbol, Position } from "../../types";
 import type { MouseEvent } from "react";
 import { getWinningSymbol } from "../../minimax";
 import styles from "./game.module.css";
+import RobotIcon from "../../components/robotIcon/RobotIcon";
 
 function Game(props: {
   nextPlayer: Player | null;
@@ -36,7 +37,14 @@ function Game(props: {
   return (
     <div id={styles.game}>
       <Board {...props} />
-      <div id={styles.status}>{statusMessage}</div>
+      <div id={styles.statusBox}>
+        <div id={styles.speechBubble}>
+          <div id={styles.statusMessage}>{statusMessage}</div>
+        </div>
+        <div id={styles.robotIcon}>
+          <RobotIcon />
+        </div>
+      </div>
     </div>
   );
 }

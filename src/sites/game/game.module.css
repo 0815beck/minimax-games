@@ -8,7 +8,71 @@
   min-height: 100dvh;
 }
 
-#status {
+#statusBox {
+  display: flex;
+  gap: 0.5rem;
+  width: 90%;
+  margin: 0 auto;
+}
+
+#speechBubble {
+  flex: 1;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+#speechBubble:after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 2rem 0 0 2rem;
+  border-color: transparent transparent transparent var(--bg-color-light);
+  align-self: flex-end;
+}
+
+#statusMessage {
   font-family: var(--font);
   font-size: 1.2rem;
+  padding: 0.8rem 1rem 0.8rem 1rem;
+  border-radius: 1rem 1rem 0 1rem;
+  min-height: 6rem;
+  background-color: var(--bg-color-light);
+  flex: 1;
+}
+
+#robotIcon {
+  width: 3rem;
+  height: 3rem;
+  align-self: flex-end;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  #statusBox {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #speechBubble {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  #speechBubble:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 2rem 2rem 0;
+    border-color: transparent var(--bg-color-light) transparent transparent;
+    align-self: flex-end;
+    margin-right: 3rem;
+  }
+
+  #statusMessage {
+    border-radius: 1rem;
+  }
 }

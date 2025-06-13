@@ -63,7 +63,7 @@
 }
 
 .setting:nth-of-type(2) .settingBtn {
-  --neon: var(--blue);
+  --neon: var(--pink);
   border-color: var(--neon);
   color: var(--neon);
   box-shadow: inset 0 0 0.5em var(--neon), 0 0 1em var(--neon);
@@ -71,7 +71,7 @@
 }
 
 .setting:nth-of-type(3) .settingBtn {
-  --neon: var(--green);
+  --neon: var(--pink);
   border-color: var(--neon);
   color: var(--neon);
   box-shadow: inset 0 0 0.5em var(--neon), 0 0 1em var(--neon);
@@ -94,7 +94,7 @@
 }
 
 .setting:nth-of-type(2) .selected {
-  --neon: var(--blue);
+  --neon: var(--pink);
   color: var(--bg-color);
   background-color: var(--neon);
   transform: scale(1.05);
@@ -103,7 +103,7 @@
 }
 
 .setting:nth-of-type(3) .selected {
-  --neon: var(--green);
+  --neon: var(--pink);
   color: var(--bg-color);
   background-color: var(--neon);
   transform: scale(1.05);
@@ -116,14 +116,15 @@
 }
 
 .submitBtn {
+  --neon: var(--blue);
   align-self: center;
   padding: 0.75rem 2rem;
   font-size: 1.2rem;
   background: transparent;
-  border: 2px solid var(--yellow);
-  color: var(--yellow);
-  box-shadow: inset 0 0 0.75em var(--yellow), 0 0 1em var(--yellow);
-  text-shadow: 0 0 0.3em var(--yellow);
+  border: 2px solid var(--neon);
+  color: var(--neon);
+  box-shadow: inset 0 0 0.75em var(--neon), 0 0 1em var(--neon);
+  text-shadow: 0 0 0.3em var(--neon);
   cursor: pointer;
   transition: all 0.3s ease;
 }

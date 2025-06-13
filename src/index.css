@@ -1,9 +1,9 @@
 :root {
-  --pink: #ff4fd8;
-  --blue: #00f0ff;
-  --green: #39ff14;
-  --yellow: #ffe600;
-  --white: #ffffff;
+  --pink: hsla(311, 100%, 66%, 1);
+  --blue: hsla(184, 100%, 50%, 1);
+  --green: hsla(113, 100%, 54%, 1);
+  --yellow: hsla(54, 100%, 50%, 1);
+  --white: hsla(0, 0%, 100%, 1);
   --text-color: var(--white);
   --bg-color: hsl(280, 50%, 8%);
   --bg-color-light: hsl(280, 50%, 16%);
