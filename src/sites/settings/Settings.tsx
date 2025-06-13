@@ -1,27 +1,38 @@
-import type { Symbol, Difficulty, Player } from "../../types";
+import {
+  type Symbol,
+  type Difficulty,
+  type Player,
+  invertPlayer,
+} from "../../types";
 import type { MouseEvent } from "react";
 import styles from "./settings.module.css";
 
 function Settings(props: {
   startPlayer: Player | null;
-  startSymbol: Symbol | null;
+  userSymbol: Symbol | null;
   difficulty: Difficulty | null;
   setStartPlayer: React.Dispatch<React.SetStateAction<Player | null>>;
-  setStartSymbol: React.Dispatch<React.SetStateAction<Symbol | null>>;
+  setUserSymbol: React.Dispatch<React.SetStateAction<Symbol | null>>;
   setDifficulty: React.Dispatch<React.SetStateAction<Difficulty | null>>;
   onNewGame: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   return (
     <div id={styles.outerBox}>
-      <p id={styles.settings}>
-        <p className={styles.setting}>
+      <div id={styles.settings}>
+        <div className={styles.setting}>
           <label className={styles.settingLabel}>
             Wer soll das Spiel beginnen?
           </label>
           <div className={styles.btnGroup}>
             {(["HUMAN", "MACHINE"] as Player[]).map((player) => (
               <button
-                className={styles.settingBtn}
+                className={`${styles.settingBtn} ${
+                  player === props.startPlayer
+                    ? styles.selected
+                    : props.startPlayer
+                    ? styles.notSelected
+                    : ""
+                }`}
                 key={player}
                 onClick={() => props.setStartPlayer(player)}
               >
@@ -29,29 +40,41 @@ function Settings(props: {
               </button>
             ))}
           </div>
-        </p>
-        <p className={styles.setting}>
+        </div>
+        <div className={styles.setting}>
           <label className={styles.settingLabel}>
             Welches Symbol möchtest du?
           </label>
           <div className={styles.btnGroup}>
             {(["X", "O"] as Symbol[]).map((sym) => (
               <button
-                className={`${styles.settingBtn} ${styles.btnPink}`}
+                className={`${styles.settingBtn} ${
+                  sym === props.userSymbol
+                    ? styles.selected
+                    : props.userSymbol
+                    ? styles.notSelected
+                    : ""
+                }`}
                 key={sym}
-                onClick={() => props.setStartSymbol(sym)}
+                onClick={() => props.setUserSymbol(sym)}
               >
                 {sym}
               </button>
             ))}
           </div>
-        </p>
-        <p className={styles.setting}>
+        </div>
+        <div className={styles.setting}>
           <label className={styles.settingLabel}>Schwierigkeitsgrad</label>
           <div className={styles.btnGroup}>
             {(["EASY", "HARD"] as Difficulty[]).map((level) => (
               <button
-                className={styles.settingBtn}
+                className={`${styles.settingBtn} ${
+                  level === props.difficulty
+                    ? styles.selected
+                    : props.difficulty
+                    ? styles.notSelected
+                    : ""
+                }`}
                 key={level}
                 onClick={() => props.setDifficulty(level)}
               >
@@ -59,12 +82,12 @@ function Settings(props: {
               </button>
             ))}
           </div>
-        </p>
+        </div>
 
         <button className={styles.submitBtn} onClick={props.onNewGame}>
           Spiel starten
         </button>
-      </p>
+      </div>
     </div>
   );
 }

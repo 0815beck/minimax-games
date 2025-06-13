@@ -1,5 +1,6 @@
 import type { Symbol } from "../../types.ts";
 import type { MouseEvent } from "react";
+import styles from "./field.module.css";
 
 function Field(props: {
   disabled: boolean;
@@ -7,11 +8,12 @@ function Field(props: {
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   let symbolSvg = <></>;
+
   if (props.symbol === "X") {
     symbolSvg = (
       <svg
         viewBox="0 0 100 100"
-        className={"w-3/4 h-3/4 mx-auto my-auto"}
+        className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
         style={{
           filter:
@@ -30,7 +32,7 @@ function Field(props: {
     symbolSvg = (
       <svg
         viewBox="0 0 100 100"
-        className={`w-3/4 h-3/4 mx-auto my-auto`}
+        className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
         style={{
           filter:
@@ -46,7 +48,11 @@ function Field(props: {
   }
 
   return (
-    <button onClick={props.onClick} disabled={props.disabled}>
+    <button
+      className={styles.field}
+      onClick={props.onClick}
+      disabled={props.disabled}
+    >
       {symbolSvg}
     </button>
   );

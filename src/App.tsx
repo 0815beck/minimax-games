@@ -11,7 +11,7 @@ import Settings from "./sites/settings/Settings";
 
 function App() {
   const [startPlayer, setStartPlayer] = useState<Player | null>(null);
-  const [startSymbol, setStartSymbol] = useState<Symbol | null>(null);
+  const [userSymbol, setUserSymbol] = useState<Symbol | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
 
   const [nextPlayer, setNextPlayer] = useState<Player | null>("HUMAN");
@@ -25,7 +25,7 @@ function App() {
 
   let navigate = useNavigate();
   useEffect(() => {
-    if (!startPlayer || !startSymbol || !difficulty) {
+    if (!startPlayer || !userSymbol || !difficulty) {
       navigate("/einstellungen");
       return;
     }
@@ -33,20 +33,24 @@ function App() {
       setNextPlayer(startPlayer);
     }
     if (!nextSymbol) {
-      setNextSymbol(startSymbol);
+      setNextSymbol(
+        startPlayer === "HUMAN" ? userSymbol : invertSymbol(userSymbol!)
+      );
     }
   }, []);
 
   const onNewGame = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if (!startPlayer || !startSymbol || !difficulty) {
+    if (!startPlayer || !userSymbol || !difficulty) {
       navigate("/einstellungen");
       return;
     }
     const newBoard = board.map((_) => [null, null, null]);
     setBoard(newBoard);
     setNextPlayer(startPlayer);
-    setNextSymbol(startSymbol);
+    setNextSymbol(
+      startPlayer === "HUMAN" ? userSymbol : invertSymbol(userSymbol!)
+    );
     setGameOver(false);
     navigate("/");
   };
@@ -62,7 +66,7 @@ function App() {
       setNextPlayer(invertPlayer(nextPlayer!));
       setNextSymbol(invertSymbol(nextSymbol!));
       setBoard(newBoard);
-      setGameOver(!!getWinningSymbol(newBoard));
+      setGameOver(getWinningSymbol(newBoard) !== null);
     };
   };
 
@@ -75,7 +79,7 @@ function App() {
     newBoard[machineMove.row][machineMove.column] = nextSymbol;
     setNextPlayer(invertPlayer(nextPlayer!));
     setNextSymbol(invertSymbol(nextSymbol!));
-    setGameOver(!!getWinningSymbol(newBoard));
+    setGameOver(getWinningSymbol(newBoard) !== null);
     setBoard(newBoard);
   }, [board]);
 
@@ -97,10 +101,10 @@ function App() {
         element={
           <Settings
             startPlayer={startPlayer}
-            startSymbol={startSymbol}
+            userSymbol={userSymbol}
             difficulty={difficulty}
             setStartPlayer={setStartPlayer}
-            setStartSymbol={setStartSymbol}
+            setUserSymbol={setUserSymbol}
             setDifficulty={setDifficulty}
             onNewGame={onNewGame}
           />

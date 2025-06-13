@@ -1,0 +1,14 @@
+#game {
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  min-height: 100dvh;
+}
+
+#status {
+  font-family: var(--font);
+  font-size: 1.2rem;
+}

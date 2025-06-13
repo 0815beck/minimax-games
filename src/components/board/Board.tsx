@@ -1,6 +1,7 @@
 import type { Symbol, Player, Position } from "../../types";
 import Field from "../field/Field";
 import type { MouseEvent } from "react";
+import styles from "./board.module.css";
 
 function Board(props: {
   nextPlayer: Player | null;
@@ -20,20 +21,17 @@ function Board(props: {
           ? true
           : false;
       fields.push(
-        Field({
-          disabled,
-          symbol: props.board[row][column],
-          onClick: props.onFieldClick({ row, column }),
-        })
+        <Field
+          key={JSON.stringify({ column, row })}
+          disabled={disabled}
+          symbol={props.board[row][column]}
+          onClick={props.onFieldClick({ row, column })}
+        />
       );
     }
   }
 
-  return (
-    <div>
-      <div>{fields}</div>
-    </div>
-  );
+  return <div className={styles.board}>{fields}</div>;
 }
 
 export default Board;

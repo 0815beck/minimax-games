@@ -1,0 +1,17 @@
+:root {
+  --neon-x: var(--blue);
+  --neon-o: var(--pink);
+  --neon-field: #ffffff33;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  width: 90%;
+  max-width: 380px;
+  margin: 0 auto;
+}

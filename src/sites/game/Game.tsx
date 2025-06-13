@@ -2,6 +2,7 @@ import Board from "../../components/board/Board";
 import type { Player, Symbol, Position } from "../../types";
 import type { MouseEvent } from "react";
 import { getWinningSymbol } from "../../minimax";
+import styles from "./game.module.css";
 
 function Game(props: {
   nextPlayer: Player | null;
@@ -15,11 +16,13 @@ function Game(props: {
   if (props.gameOver) {
     const winningSymbol = getWinningSymbol(props.board);
     if (winningSymbol === "DRAW") {
-      statusMessage = "Unentschieden! Versuch es noch einmal!";
+      statusMessage = "Unentschieden! Das war ne Knappe Kiste.";
     } else if (props.nextPlayer === "MACHINE") {
-      statusMessage = "Du hast gewonnen! Gratulation!";
+      statusMessage =
+        "Huch, du hast gewonnen. Damit hab ich nicht gerechnet. Lust auf noch eine Runde?";
     } else if (props.nextPlayer === "HUMAN") {
-      statusMessage = "Der Computer war leider schlauer. Sei nicht traurig!";
+      statusMessage =
+        "Da hab ich wohl gewonnen, wie immer! Willst du es trotzdem nochmal versuchen?";
     }
   }
   if (!props.gameOver && props.nextPlayer === "HUMAN") {
@@ -31,9 +34,9 @@ function Game(props: {
   }
 
   return (
-    <div>
-      <p>{statusMessage}</p>
+    <div id={styles.game}>
       <Board {...props} />
+      <div id={styles.status}>{statusMessage}</div>
     </div>
   );
 }
