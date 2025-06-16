@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import "./index.css";
-import type { Difficulty, Symbol, Player, Position } from "./types";
+import type { Difficulty } from "./types";
+import type { Symbol, Player, Position } from "./minimax/tictactoe";
 import { invertPlayer, invertSymbol } from "./types";
 import type { MouseEvent } from "react";
-import { bestMove, getWinningSymbol } from "./minimax";
+import { bestMove, getWinningSymbol } from "./minimax/tictactoe";
 import Game from "./sites/game/Game";
 import { useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Settings from "./sites/settings/Settings";
 
-function App() {
+function TicTacToe() {
   const [startPlayer, setStartPlayer] = useState<Player | null>(null);
   const [userSymbol, setUserSymbol] = useState<Symbol | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
@@ -114,4 +115,4 @@ function App() {
   );
 }
 
-export default App;
+export default TicTacToe;
