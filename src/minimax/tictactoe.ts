@@ -145,4 +145,4 @@ function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
 }
 
 export type { Symbol, Position, Board, Player, Difficulty };
-export { bestMove, getWinningSymbol };
+export { bestMove, getWinningSymbol, invertPlayer, invertSymbol };

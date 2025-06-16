@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import "./index.css";
-import type { Difficulty } from "./types";
-import type { Symbol, Player, Position } from "./minimax/tictactoe";
-import { invertPlayer, invertSymbol } from "./types";
+import type { Difficulty } from "../../minimax/tictactoe";
+import type { Symbol, Player, Position } from "../../minimax/tictactoe";
+import { invertPlayer, invertSymbol } from "../../minimax/tictactoe";
 import type { MouseEvent } from "react";
-import { bestMove, getWinningSymbol } from "./minimax/tictactoe";
-import Game from "./sites/game/Game";
+import { bestMove, getWinningSymbol } from "../../minimax/tictactoe";
+import Game from "../../components/tictactoe/game/Game";
 import { useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
-import Settings from "./sites/settings/Settings";
+import Settings from "./einstellungen/Settings";
 
 function TicTacToe() {
   const [startPlayer, setStartPlayer] = useState<Player | null>(null);
@@ -27,7 +26,7 @@ function TicTacToe() {
   let navigate = useNavigate();
   useEffect(() => {
     if (!startPlayer || !userSymbol || !difficulty) {
-      navigate("/einstellungen");
+      navigate("/tictactoe/einstellungen");
       return;
     }
     if (!nextPlayer) {
@@ -40,10 +39,9 @@ function TicTacToe() {
     }
   }, []);
 
-  const onNewGame = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const onNewGame = () => {
     if (!startPlayer || !userSymbol || !difficulty) {
-      navigate("/einstellungen");
+      navigate("/tictactoe/einstellungen");
       return;
     }
     const newBoard = board.map((_) => [null, null, null]);
@@ -53,7 +51,7 @@ function TicTacToe() {
       startPlayer === "HUMAN" ? userSymbol : invertSymbol(userSymbol!)
     );
     setGameOver(false);
-    navigate("/");
+    navigate("/tictactoe");
   };
 
   const onFieldClick = (position: Position) => {

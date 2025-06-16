@@ -1,0 +1,62 @@
+.setting {
+  background-color: var(--bg-color-light);
+  padding: 1.5rem 2rem 2rem 2rem;
+  box-shadow: 0 0 1rem hsla(0, 0%, 100%, 0.1),
+    inset 0 0 0.75rem hsla(0, 0%, 100%, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settingLabel {
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.btnGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.settingBtn {
+  padding: 0.6rem 1.2rem;
+  min-width: 5.5rem;
+  text-align: center;
+  font-size: 1rem;
+  background: transparent;
+  border: 2px solid;
+  cursor: pointer;
+  color: inherit;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 0.3em currentColor;
+}
+
+.setting .settingBtn {
+  --neon: var(--pink);
+  border-color: var(--neon);
+  color: var(--neon);
+  box-shadow: inset 0 0 0.5em var(--neon), 0 0 1em var(--neon);
+  text-shadow: 0 0 0.1rem var(--neon), 0 0 0.05rem var(--white);
+}
+
+.settingBtn:hover,
+.settingBtn:focus {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.setting .selected {
+  --neon: var(--pink);
+  color: var(--bg-color);
+  background-color: var(--neon);
+  transform: scale(1.05);
+  filter: brightness(1);
+  font-weight: bolder;
+}
+
+.setting .notSelected {
+  filter: brightness(0.9);
+}

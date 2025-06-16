@@ -1,4 +1,4 @@
-import type { Symbol, Player, Position } from "../../types";
+import type { Symbol, Player, Position } from "../../../minimax/tictactoe";
 import Field from "../field/Field";
 import type { MouseEvent } from "react";
 import styles from "./board.module.css";

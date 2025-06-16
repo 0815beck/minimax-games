@@ -1,0 +1,46 @@
+import styles from "./binarySetting.module.css";
+
+function BinarySetting(props: {
+  settingLabel: string;
+  labelLeft: string;
+  labelRight: string;
+  setLeft: () => void;
+  setRight: () => void;
+  selected: "LEFT" | "RIGHT" | null;
+}) {
+  return (
+    <div className={styles.setting}>
+      <label className={styles.settingLabel}>{props.settingLabel}</label>
+      <div className={styles.btnGroup}>
+        <button
+          className={`${styles.settingBtn} ${
+            props.selected === "LEFT"
+              ? styles.selected
+              : props.selected !== null
+              ? styles.notSelected
+              : ""
+          }`}
+          key={"LEFT"}
+          onClick={props.setLeft}
+        >
+          {props.labelLeft}
+        </button>
+        <button
+          className={`${styles.settingBtn} ${
+            props.selected === "RIGHT"
+              ? styles.selected
+              : props.selected !== null
+              ? styles.notSelected
+              : ""
+          }`}
+          key={"RIGHT"}
+          onClick={props.setRight}
+        >
+          {props.labelRight}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default BinarySetting;
