@@ -1,11 +1,13 @@
 /**
+ * CHECKERS: GAME STATE IMPLEMENTATION
  *
  * This file contains the implementation of the checkers game rules and
  * its game state class, which can be fed into the minimax algorithm.
  *
- * Checkers is played on a 8 x 8 grid. At the start of the game the white pieces
- * are positioned at the south half of the board, and the black pieces are in the
- * north. The board looks as follows:
+ * Pieces move diagonally on an 8x8 board. Non-promoted pieces move forward,
+ * while promoted pieces can move in all diagonal directions.
+ *
+ * Board layout at game start:
  *
  *      -  B  -  B  -  B  -  B
  *      B  -  B  -  B  -  B  -
@@ -15,127 +17,147 @@
  *      W  -  w  -  W  -  W  -
  *      -  W  -  W  -  W  -  W
  *      W  -  W  -  W  -  W  -
- *
- *  The full rules can be found here:
  */
 
-import type { Node } from "./minimax";
-
-type Piece = "WHITE" | "BLACK" | "WHITE_QUEEN" | "BLACK_QUEEN";
 type Color = "WHITE" | "BLACK";
-type Board = (Piece | null)[][];
-type Player = "HUMAN" | "MACHINE";
+type Piece = { color: Color; promoted: boolean };
+type Vector2D = { row: number; column: number };
 
-class Vector2D {
-  public row: number;
-  public column: number;
-
-  constructor(row: number, column: number) {
-    this.row = row;
-    this.column = column;
-  }
-
-  add(other: Vector2D): Vector2D {
-    this.row += other.row;
-    this.column += other.column;
-    return this;
-  }
-
-  scale(lambda: number): Vector2D {
-    this.row = lambda * this.row;
-    this.column = lambda * this.column;
-    return this;
-  }
+function invertColor(color: Color) {
+  return color === "WHITE" ? "BLACK" : "WHITE";
 }
 
+type Board = Map<Vector2D, Piece | null>;
+
+const NORTH_EAST: Vector2D = { row: 1, column: 1 };
+const NORTH_WEST: Vector2D = { row: 1, column: -1 };
+const SOUTH_EAST: Vector2D = { row: -1, column: 1 };
+const SOUTH_WEST: Vector2D = { row: -1, column: -1 };
+
+const DIRECTIONS = {
+  WHITE: [NORTH_WEST, NORTH_EAST],
+  BLACK: [SOUTH_EAST, SOUTH_WEST],
+  PROMOTED: [NORTH_EAST, NORTH_WEST, SOUTH_EAST, SOUTH_WEST],
+};
+
 function add(a: Vector2D, b: Vector2D): Vector2D {
-  return new Vector2D(a.row + b.row, a.column + b.column);
+  return { row: a.row + b.row, column: a.column + b.column };
 }
 
 function scale(lambda: number, a: Vector2D) {
-  return new Vector2D(lambda * a.row, lambda * a.column);
+  return { row: lambda * a.row, column: lambda * a.column };
 }
 
-const NORTH_EAST: Vector2D = new Vector2D(1, 1);
-const NORTH_WEST: Vector2D = new Vector2D(1, -1);
-const SOUTH_EAST: Vector2D = new Vector2D(-1, 1);
-const SOUTH_WEST: Vector2D = new Vector2D(-1, -1);
-
-function getColorOfPiece(piece: Piece): Color {
-  let color: Color;
-  switch (piece) {
-    case "WHITE":
-      color = "WHITE";
-      break;
-    case "BLACK":
-      color = "BLACK";
-      break;
-    case "WHITE_QUEEN":
-      color = "WHITE";
-      break;
-    case "BLACK_QUEEN":
-      color = "BLACK";
-      break;
-  }
-  return color;
+function onBoard(a: Vector2D): boolean {
+  return 0 <= a.row && a.row < 8 && 0 <= a.column && a.column < 8;
 }
 
-/**
- * A move in checkers can be either a normal move or a capture.
- * It is possible to capture more than one piece in a single turn. This is
- * why a capture is represented by an array of end positions.
- *
- * The last position is the position where the piece is finally at.
- */
-type Move = { start: Vector2D; end: Vector2D | Vector2D[] };
+type StandardMove = { type: "standard"; start: Vector2D; end: Vector2D };
+type CaptureChain = { type: "capture"; path: Vector2D[]; captures: Vector2D[] };
+type Move = StandardMove | CaptureChain;
 
 /**
- * This function calculates all allowed moves in a given checkers position. If one of
- * the moves is a capture, then all other moves are ignored and only captures are
- * returned (Schlagzwang). Additionally only the captures (one or more) with the
- * highest amount of captured enemy pieces are allowed moves (Mehrheitsschlag).
+ * Generates all legal moves for the given player in the current board state.
  *
- * @param board - The current game state
- * @param nextToMove - The color which will move next
- * @param position - Position of the piece, if there is no piece at the position, then the
- * functions returns the empty array.
- * @returns - Array of possible moves
+ * Enforces the following checkers rules:
+ * - If any capture is available, all non-capturing moves are disallowed (Schlagzwang)
+ * - Only the longest available capture chains are legal (Mehrheitsschlag)
+ *
+ * @param board - Current state of the game board
+ * @param nextToMove - The player whose turn it is
+ * @returns A list of all legal moves for the active player
  */
 function moves(board: Board, nextToMove: Color): Move[] {
   let moves: Move[] = [];
+
   for (let row = 0; row < 8; row++) {
     for (let column = 0; column < 8; column++) {
-      if (row + (column % 2) !== 0) {
+      const start: Vector2D = { row, column };
+      const piece = board.get(start);
+      if (!piece || piece?.color !== nextToMove) {
         continue;
       }
-      let piece = board[row][column];
-      if (!piece) {
-        continue;
+      const directions = DIRECTIONS[piece.promoted ? "PROMOTED" : piece.color];
+
+      // Attempt standard (non-capturing) moves
+      for (let direction of directions) {
+        const end = add(start, direction);
+        if (board.get(end) === null && onBoard(end)) {
+          moves.push({ type: "standard", start, end });
+        }
       }
-      if (getColorOfPiece(piece) !== nextToMove) {
-        continue;
+
+      // Attempt single-step captures from current position
+      let captureChains: CaptureChain[] = [];
+      for (let direction of directions) {
+        const firstStep: Vector2D = add(start, scale(2, direction));
+        const inBetween: Vector2D = add(start, direction);
+        if (
+          !onBoard(firstStep) ||
+          board.get(firstStep) !== null ||
+          board.get(inBetween) === null ||
+          board.get(inBetween)?.color === nextToMove
+        ) {
+          continue;
+        }
+        captureChains.push({
+          type: "capture",
+          path: [start, firstStep],
+          captures: [inBetween],
+        });
+      }
+
+      // extend single-step captures to multi-jump capture chains if possible
+      let current: CaptureChain[] = captureChains;
+      let next: CaptureChain[] = [];
+
+      while (current.length > 0) {
+        for (let chain of current) {
+          let isComplete: boolean = true;
+          const lastStep: Vector2D = chain.path[chain.path.length - 1];
+          for (let direction of directions) {
+            const nextStep: Vector2D = add(lastStep, scale(2, direction));
+            const inBetween: Vector2D = add(lastStep, direction);
+            if (
+              !onBoard(nextStep) ||
+              board.get(nextStep) !== null ||
+              board.get(inBetween) === null ||
+              board.get(inBetween)?.color === nextToMove ||
+              chain.path.includes(nextStep) ||
+              chain.captures.includes(inBetween)
+            ) {
+              continue;
+            }
+            isComplete = false;
+            next.push({
+              type: chain.type,
+              path: [...chain.path, nextStep],
+              captures: [...chain.captures, inBetween],
+            });
+          }
+          if (isComplete) {
+            // chain can not be expanded further
+            moves.push(chain);
+          }
+        }
+        current = next;
+        next = [];
       }
     }
   }
-  return [];
-}
 
-/*
-class State implements Node {
-  private board: Board;
-  private nextPlayer: Player;
-  private nextColor: Color;
-  private turnsSinceLastCapture: number;
-
-  constructor(
-    board: Board,
-    nextPlayer: Player,
-    nextColor: Color,
-    turnsSinceLastCapture: number = 0
-  ) {
-    this.board = board;
-    this.nextPlayer = nextPlayer;
-    this.nextColor = nextColor;
-    this.turnsSinceLastCapture = turnsSinceLastCapture;
+  // enforce Schlagzwang and Mehrheitsschlag rules
+  let maxCaptures = 0;
+  for (let m of moves) {
+    if (m.type === "capture") {
+      maxCaptures = Math.max(maxCaptures, m.captures.length);
+    }
   }
-}*/
+  if (maxCaptures > 0) {
+    moves = moves.filter(
+      (m) => m.type === "capture" && m.captures.length === maxCaptures
+    );
+  }
+
+  return moves;
+}
