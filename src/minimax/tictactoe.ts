@@ -1,18 +1,14 @@
+import { invertPlayer, type Player } from "../types/Player";
 import type { Node } from "./minimax";
 import { minimax } from "./minimax";
 
 type Symbol = "X" | "O";
 type Position = { row: number; column: number };
 type Board = (Symbol | null)[][];
-type Player = "HUMAN" | "MACHINE";
 type Difficulty = "EASY" | "HARD";
 
 function invertSymbol(symbol: Symbol): Symbol {
   return symbol === "X" ? "O" : "X";
-}
-
-function invertPlayer(player: Player): Player {
-  return player === "HUMAN" ? "MACHINE" : "HUMAN";
 }
 
 function getWinningSymbol(board: Board): Symbol | "DRAW" | null {
@@ -69,10 +65,10 @@ function getWinningSymbol(board: Board): Symbol | "DRAW" | null {
   return null;
 }
 
-class State implements Node {
-  private board: Board;
-  private nextSymbol: Symbol;
-  private nextPlayer: Player;
+class State implements Node<State> {
+  public board: Board;
+  public nextSymbol: Symbol;
+  public nextPlayer: Player;
 
   constructor(board: Board, nextSymbol: Symbol, nextPlayer: Player) {
     this.board = board;
@@ -84,23 +80,7 @@ class State implements Node {
     return getWinningSymbol(this.board) !== null;
   }
 
-  evaluation(): number {
-    if (!this.isLeaf()) {
-      return 0;
-    }
-    if (getWinningSymbol(this.board) === "DRAW") {
-      return 0;
-    }
-    if (this.nextPlayer === "HUMAN") {
-      return 1;
-    }
-    if (this.nextPlayer === "MACHINE") {
-      return -1;
-    }
-    return 0;
-  }
-
-  *[Symbol.iterator](): Iterator<Node> {
+  *[Symbol.iterator](): Iterator<State> {
     if (this.isLeaf()) return;
 
     for (let row = 0; row < 3; row++) {
@@ -120,6 +100,22 @@ class State implements Node {
   }
 }
 
+function evaluation(state: State): number {
+  if (!state.isLeaf()) {
+    return 0;
+  }
+  if (getWinningSymbol(state.board) === "DRAW") {
+    return 0;
+  }
+  if (state.nextPlayer === "HUMAN") {
+    return 1;
+  }
+  if (state.nextPlayer === "MACHINE") {
+    return -1;
+  }
+  return 0;
+}
+
 function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
   const positionScoreTable: { position: Position; score: number }[] = [];
 
@@ -129,6 +125,7 @@ function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
         board[row][column] = nextSymbol;
         const score = minimax<State>(
           new State(board, invertSymbol(nextSymbol), "HUMAN"),
+          evaluation,
           9,
           false
         );
@@ -147,5 +144,5 @@ function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
   return positionScoreTable.sort((a, b) => b.score - a.score)[0].position;
 }
 
-export type { Symbol, Position, Board, Player, Difficulty };
-export { bestMove, getWinningSymbol, invertPlayer, invertSymbol };
+export type { Symbol, Position, Player, Board, Difficulty };
+export { bestMove, getWinningSymbol, invertSymbol, invertPlayer };

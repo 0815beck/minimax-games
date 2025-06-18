@@ -1,46 +1,20 @@
 import { useState, useEffect, type MouseEvent } from "react";
 import styles from "./Checkers.module.css";
-
-import type { Color, Move, Vector2D, Player } from "../../minimax/checkers";
-import {
-  Board,
-  getFirstStep,
-  getMoves,
-  getStart,
-  invertColor,
-  START_POSITION,
-} from "../../minimax/checkers";
+import type { Player } from "../../types/Player";
+import type { Color } from "../../types/Color";
+import { State } from "../../minimax/checkers";
+import type { Vector2D } from "../../types/Vector2D";
 
 function Checkers() {
   const [startPlayer, setStartPlayer] = useState<Player | null>("HUMAN");
   const [userColor, setUserColor] = useState<Color | null>("PINK");
-  const [searchDepth, setSearchDepth] = useState<Number | null>(20);
+  const [searchDepth, setSearchDepth] = useState<Number | null>(10);
 
-  const [nextPlayer, setNextPlayer] = useState<Player | null>("HUMAN");
-  const [gameOver, setGameOver] = useState<Boolean | null>(false);
-  const [lastCapture, setLastCapture] = useState<Number | null>(0);
-  const [board, setBoard] = useState<Board>(START_POSITION);
-
-  const nextColor: Color | null =
-    nextPlayer === "HUMAN"
-      ? userColor
-      : userColor
-      ? invertColor(userColor)
-      : null;
+  const [state, setState] = useState<State | null>(null);
+  const gameOver = state?.isLeaf();
+  const moves = state?.nextMoves();
 
   const [selectedField, setSelectedField] = useState<Vector2D | null>(null);
-  const [moves, setMoves] = useState<Move[]>(
-    nextColor ? getMoves(board, nextColor) : []
-  );
-
-  const onClick =
-    (position: Vector2D) => (event: MouseEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      if (selectedField) {
-        // do move
-      }
-      setSelectedField(position);
-    };
 
   const possibleMovePositions: Vector2D[] = selectedField
     ? moves
@@ -51,6 +25,50 @@ function Checkers() {
         )
         .map((move) => getFirstStep(move))
     : [];
+
+  const applyMove = (move: Move) => {
+    if (!nextColor || !nextPlayer) {
+      return;
+    }
+
+    // only apply the first step of the move
+    const start = getStart(move);
+    const end = getEnd(move);
+    const firstStep = getFirstStep(move);
+
+    if (end.row !== firstStep.row || end.column !== firstStep.column) {
+    }
+
+    if (move.type === "standard") {
+      const newBoard = board.copy();
+      board.applyMove(move);
+      setLastCapture(lastCapture + 1);
+      setNextColor(invertColor(nextColor));
+      setNextPlayer(invertPlayer(nextPlayer));
+      const newMoves = getMoves(newBoard, nextColor);
+      setBoard(newBoard);
+      setMoves(newMoves);
+    }
+    if (move.type === "capture") {
+      // only apply the first step of the move
+      if (move.path.length === 2) {
+      }
+    }
+  };
+
+  const onClick =
+    (position: Vector2D) => (event: MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      if (
+        selectedField &&
+        possibleMovePositions.find(
+          (x) => x.row === position.row && x.column === position.column
+        )
+      ) {
+        //make move
+      }
+      setSelectedField(position);
+    };
 
   console.log("Possible move positions: ", possibleMovePositions);
 

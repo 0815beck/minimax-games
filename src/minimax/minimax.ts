@@ -1,23 +1,30 @@
-interface Node extends Iterable<Node> {
+interface Node<State> extends Iterable<State> {
   isLeaf: () => boolean;
-  evaluation: () => number;
 }
 
-function minimax<State extends Node>(
+function minimax<State extends Node<State>>(
   state: State,
-  depth: number,
+  evaluation: (state: State) => number,
+  maxDepth: number,
   isMaximizing: boolean,
   alpha: number = -Infinity,
   beta: number = +Infinity
 ): number {
-  if (depth === 0 || state.isLeaf()) {
-    return state.evaluation();
+  if (maxDepth === 0 || state.isLeaf()) {
+    return evaluation(state);
   }
 
   if (isMaximizing) {
     let bestValue = -Infinity;
     for (let child of state) {
-      let value = minimax(child, depth - 1, !isMaximizing, alpha, beta);
+      let value = minimax(
+        child,
+        evaluation,
+        maxDepth - 1,
+        !isMaximizing,
+        alpha,
+        beta
+      );
       bestValue = Math.max(bestValue, value);
       alpha = Math.max(alpha, bestValue);
       if (beta <= alpha) {
@@ -28,7 +35,14 @@ function minimax<State extends Node>(
   } else {
     let worstValue = +Infinity;
     for (let child of state) {
-      let value = minimax(child, depth - 1, !isMaximizing, alpha, beta);
+      let value = minimax(
+        child,
+        evaluation,
+        maxDepth - 1,
+        !isMaximizing,
+        alpha,
+        beta
+      );
       worstValue = Math.min(worstValue, value);
       beta = Math.min(beta, worstValue);
       if (beta <= alpha) {
