@@ -1,4 +1,4 @@
-import styles from "./binarySetting.module.css";
+import styles from "./BinarySetting.module.css";
 
 function BinarySetting(props: {
   settingLabel: string;

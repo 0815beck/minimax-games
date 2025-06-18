@@ -1,4 +1,4 @@
-import styles from "./robotIcon.module.css";
+import styles from "./RobotIcon.module.css";
 
 const RobotIcon = () => (
   <svg

@@ -1,11 +1,9 @@
-import Board from "../board/Board";
+import Board from "../../../components/tictactoe/board/Board";
 import type { Player, Symbol, Position } from "../../../minimax/tictactoe";
 import type { MouseEvent } from "react";
 import { getWinningSymbol } from "../../../minimax/tictactoe";
-import styles from "./game.module.css";
-import RobotIcon from "../../robotIcon/RobotIcon";
-import Button from "../../button/Button";
-import { useNavigate } from "react-router-dom";
+import styles from "./Game.module.css";
+import StatusBox from "../../../components/statusbox/StatusBox";
 
 function Game(props: {
   nextPlayer: Player | null;
@@ -15,7 +13,6 @@ function Game(props: {
     position: Position
   ) => (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
-  let navigate = useNavigate();
   let statusMessage: string = "";
   if (props.gameOver) {
     const winningSymbol = getWinningSymbol(props.board);
@@ -40,30 +37,7 @@ function Game(props: {
   return (
     <div id={styles.game}>
       <Board {...props} />
-      <div id={styles.statusBox}>
-        <div id={styles.speechBubble}>
-          <div id={styles.bubbleContentBox}>
-            <div id={styles.statusMessage}>{statusMessage}</div>
-            {props.gameOver && (
-              <div id={styles.btnGroup}>
-                <Button
-                  label="Gerne nochmal"
-                  onClick={() => navigate("/tictactoe/einstellungen")}
-                  className={styles.btn}
-                />
-                <Button
-                  label="Ich hab genug"
-                  onClick={() => navigate("/")}
-                  className={styles.btn}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-        <div id={styles.robotIcon}>
-          <RobotIcon />
-        </div>
-      </div>
+      <StatusBox message={statusMessage} className={styles.statusBox} />
     </div>
   );
 }

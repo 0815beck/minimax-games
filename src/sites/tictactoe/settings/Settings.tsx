@@ -3,7 +3,7 @@ import {
   type Difficulty,
   type Player,
 } from "../../../minimax/tictactoe";
-import styles from "./settings.module.css";
+import styles from "./Settings.module.css";
 import BinarySetting from "../../../components/binarySetting/BinarySetting";
 import Button from "../../../components/button/Button";
 

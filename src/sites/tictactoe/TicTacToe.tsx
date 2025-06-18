@@ -4,10 +4,10 @@ import type { Symbol, Player, Position } from "../../minimax/tictactoe";
 import { invertPlayer, invertSymbol } from "../../minimax/tictactoe";
 import type { MouseEvent } from "react";
 import { bestMove, getWinningSymbol } from "../../minimax/tictactoe";
-import Game from "../../components/tictactoe/game/Game";
+import Game from "./game/Game";
 import { useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
-import Settings from "./einstellungen/Settings";
+import Settings from "./settings/Settings";
 
 function TicTacToe() {
   const [startPlayer, setStartPlayer] = useState<Player | null>(null);

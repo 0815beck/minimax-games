@@ -1,7 +1,7 @@
 import type { Symbol, Player, Position } from "../../../minimax/tictactoe";
 import Field from "../field/Field";
 import type { MouseEvent } from "react";
-import styles from "./board.module.css";
+import styles from "./Board.module.css";
 
 function Board(props: {
   nextPlayer: Player | null;

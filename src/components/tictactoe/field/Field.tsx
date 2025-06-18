@@ -1,6 +1,6 @@
 import type { Symbol } from "../../../minimax/tictactoe";
 import type { MouseEvent } from "react";
-import styles from "./field.module.css";
+import styles from "./Field.module.css";
 
 function Field(props: {
   disabled: boolean;

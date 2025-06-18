@@ -1,54 +1,25 @@
-# React + TypeScript + Vite
+# MINIMAX GAMES
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Play complete information games against the sassy robot Minimax in a Neo-Futuristic Web-Application.
 
-Currently, two official plugins are available:
+Minimax uses the minimax algorithm with alpha-beta pruning to play. This algorithm can be used
+on all complete information games.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To apply the algorithm to a game one needs:
 
-## Expanding the ESLint configuration
+- a type State which represents the possible states of the game
+- a way to enumerate all possible child states of a given game state
+- a heuristic evaluation function which gives each intermediate game state a score
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The heuristic evaluation function is only necessary when the game tree is too large to
+be evaluated completely (ie for almost all games other than tic tac toe).
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Currently implemented are:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- checkers
+- tic tac toe
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Run the app
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+To run the app on a development server execute the command "npm run dev" in the root directory. To deploy the app
+run "npm run build", take the static files from the build folder, and serve them with a web server.

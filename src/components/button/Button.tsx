@@ -1,4 +1,4 @@
-import styles from "./button.module.css";
+import styles from "./Button.module.css";
 import type { MouseEvent } from "react";
 
 function Button(props: {
