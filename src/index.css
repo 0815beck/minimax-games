@@ -5,6 +5,9 @@
   --text-color: var(--white);
   --bg-color: hsl(280, 50%, 8%);
   --bg-color-light: hsl(280, 50%, 16%);
+  --purple-glow: hsla(280, 100%, 70%, 0.2);
+  --purple-glow-inner: hsla(280, 100%, 80%, 0.1);
+  --purple-glow-bright: hsla(280, 100%, 90%, 0.7);
   --font: "Orbitron", monospace;
 }
 

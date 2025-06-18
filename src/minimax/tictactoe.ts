@@ -16,17 +16,7 @@ function invertPlayer(player: Player): Player {
 }
 
 function getWinningSymbol(board: Board): Symbol | "DRAW" | null {
-  let boardIsFull = true;
-  for (let row = 0; row < 3; row++) {
-    for (let column = 0; column < 3; column++) {
-      if (board[row][column] === null) {
-        boardIsFull = false;
-      }
-    }
-  }
-  if (boardIsFull) {
-    return "DRAW";
-  }
+  // check if a row, column or diagonal is filled with the same symbol
   for (let row = 0; row < 3; row++) {
     if (
       board[row][0] === board[row][1] &&
@@ -61,6 +51,19 @@ function getWinningSymbol(board: Board): Symbol | "DRAW" | null {
     board[2][0] !== null
   ) {
     return board[2][0];
+  }
+
+  //check if the board is full
+  let boardIsFull = true;
+  for (let row = 0; row < 3; row++) {
+    for (let column = 0; column < 3; column++) {
+      if (board[row][column] === null) {
+        boardIsFull = false;
+      }
+    }
+  }
+  if (boardIsFull) {
+    return "DRAW";
   }
 
   return null;
