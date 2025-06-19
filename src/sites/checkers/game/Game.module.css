@@ -1,0 +1,44 @@
+:root {
+  --bg-light-field: hsl(280, 50%, 30%);
+  --bg-dark-field: var(--bg-color-light);
+  --bg-can-be-moved-to: hsla(0, 75%, 48%, 0.605);
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.1rem;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.field {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 0 0.5rem var(--purple-glow),
+    inset 0 0 0.5rem var(--purple-glow-inner);
+  border-radius: 0rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 5%;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.lightField {
+  background-color: var(--bg-light-field);
+}
+
+.darkField {
+  background-color: var(--bg-dark-field);
+}
+
+.canBeMovedTo {
+  background-color: var(--bg-can-be-moved-to);
+}

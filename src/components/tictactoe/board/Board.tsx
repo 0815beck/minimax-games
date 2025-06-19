@@ -1,14 +1,16 @@
-import type { Symbol, Player, Position } from "../../../minimax/tictactoe";
+import type { Symbol } from "../../../minimax/tictactoe";
 import Field from "../field/Field";
 import type { MouseEvent } from "react";
 import styles from "./Board.module.css";
+import type { Player } from "../../../types/Player";
+import type { Vector2D } from "../../../types/Vector2D";
 
 function Board(props: {
-  nextPlayer: Player | null;
+  nextPlayer: Player | undefined;
   gameOver: boolean;
   board: (Symbol | null)[][];
   onFieldClick: (
-    position: Position
+    position: Vector2D
   ) => (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   let fields = [];

@@ -1,147 +1,119 @@
 import { useState, useEffect, type MouseEvent } from "react";
-import styles from "./Checkers.module.css";
-import type { Player } from "../../types/Player";
-import type { Color } from "../../types/Color";
-import { State } from "../../minimax/checkers";
-import type { Vector2D } from "../../types/Vector2D";
+import { type Player } from "../../types/Player";
+import {
+  invertColorIfDefined,
+  State,
+  type Color,
+  START_POSITION,
+  bestMove,
+} from "../../minimax/checkers";
+
+import { Route, Routes, useNavigate } from "react-router-dom";
+import { equals, type Vector2D } from "../../types/Vector2D";
+import Game from "./game/Game";
+import type { Difficulty } from "../../minimax/tictactoe";
+import Settings from "./settings/Settings";
 
 function Checkers() {
-  const [startPlayer, setStartPlayer] = useState<Player | null>("HUMAN");
-  const [userColor, setUserColor] = useState<Color | null>("PINK");
-  const [searchDepth, setSearchDepth] = useState<Number | null>(10);
+  const [startPlayer, setStartPlayer] = useState<Player | undefined>(undefined);
+  const [userColor, setUserColor] = useState<Color | undefined>(undefined);
+  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(
+    undefined
+  );
+  const [state, setState] = useState<State | undefined>(undefined);
 
-  const [state, setState] = useState<State | null>(null);
-  const gameOver = state?.isLeaf();
-  const moves = state?.nextMoves();
+  const [selectedField, setSelectedField] = useState<Vector2D | undefined>(
+    undefined
+  );
 
-  const [selectedField, setSelectedField] = useState<Vector2D | null>(null);
+  const startColor =
+    startPlayer === "HUMAN" ? userColor : invertColorIfDefined(userColor);
+  const gameOver = state ? state.isLeaf() : true;
+  const nextMoves = state?.nextMoves();
+  const searchDepth = difficulty === "HARD" ? 20 : 10;
 
-  const possibleMovePositions: Vector2D[] = selectedField
-    ? moves
-        .filter(
-          (move) =>
-            getStart(move).row === selectedField.row &&
-            getStart(move).column === selectedField.column
-        )
-        .map((move) => getFirstStep(move))
-    : [];
+  const navigate = useNavigate();
 
-  const applyMove = (move: Move) => {
-    if (!nextColor || !nextPlayer) {
+  useEffect(() => {
+    if (!startPlayer || !userColor || !searchDepth) {
+      navigate("/dame/einstellungen");
       return;
     }
-
-    // only apply the first step of the move
-    const start = getStart(move);
-    const end = getEnd(move);
-    const firstStep = getFirstStep(move);
-
-    if (end.row !== firstStep.row || end.column !== firstStep.column) {
+    if (!state) {
+      setState(new State(START_POSITION, startColor!, startPlayer, 0));
     }
+  }, []);
 
-    if (move.type === "standard") {
-      const newBoard = board.copy();
-      board.applyMove(move);
-      setLastCapture(lastCapture + 1);
-      setNextColor(invertColor(nextColor));
-      setNextPlayer(invertPlayer(nextPlayer));
-      const newMoves = getMoves(newBoard, nextColor);
-      setBoard(newBoard);
-      setMoves(newMoves);
+  const onNewGame = () => {
+    if (!startPlayer || !userColor || !searchDepth) {
+      navigate("/dame/einstellungen");
+      return;
     }
-    if (move.type === "capture") {
-      // only apply the first step of the move
-      if (move.path.length === 2) {
-      }
-    }
+    setState(new State(START_POSITION, startColor!, startPlayer, 0));
+    navigate("/dame");
   };
 
-  const onClick =
-    (position: Vector2D) => (event: MouseEvent<HTMLDivElement>) => {
+  const onFieldClick =
+    (position: Vector2D) => (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      if (
-        selectedField &&
-        possibleMovePositions.find(
-          (x) => x.row === position.row && x.column === position.column
-        )
-      ) {
-        //make move
+      if (!selectedField) {
+        setSelectedField(position);
+        return;
       }
-      setSelectedField(position);
+      const userMove = nextMoves?.find(
+        (move) =>
+          equals(move.start, selectedField) && equals(move.end, position)
+      );
+      if (userMove && state) {
+        const newState = state.copy();
+        newState.applyMove(userMove);
+        setState(newState);
+        setSelectedField(undefined);
+      }
     };
 
-  console.log("Possible move positions: ", possibleMovePositions);
-
-  const blueSVG = (
-    <svg
-      viewBox="0 0 100 100"
-      className="w-full h-full"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{
-        filter:
-          "drop-shadow(0 0 6px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 8px #0ff)",
-        stroke: "#0ff",
-        strokeWidth: 6,
-        strokeLinecap: "round",
-        fill: "none",
-      }}
-    >
-      <circle cx="50" cy="50" r="35" />
-    </svg>
-  );
-
-  const pinkSVG = (
-    <svg
-      viewBox="0 0 100 100"
-      className="w-full h-full"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{
-        filter:
-          "drop-shadow(0 0 4px rgba(255, 0, 255, 0.8)) drop-shadow(0 0 8px #f0f)",
-        stroke: "#f0f",
-        strokeWidth: 6,
-        fill: "none",
-      }}
-    >
-      <circle cx="50" cy="50" r="35" />
-    </svg>
-  );
+  useEffect(() => {
+    if (!state || state.nextPlayer !== "MACHINE" || gameOver || !searchDepth) {
+      return;
+    }
+    const machineMove = bestMove(state, searchDepth);
+    if (!machineMove) {
+      return;
+    }
+    const newState = state.copy();
+    newState.applyMove(machineMove);
+    setState(newState);
+  }, [state]);
 
   return (
-    <div id={styles.board}>
-      {board
-        ?.getFields()
-        .map((row, rowIndex) =>
-          row
-            .map((piece, columnIndex) => (
-              <div
-                key={`${rowIndex}-${columnIndex}`}
-                className={`${styles.field} ${
-                  (rowIndex + columnIndex) % 2 === 1
-                    ? styles.lightField
-                    : styles.darkField
-                } ${
-                  possibleMovePositions.find(
-                    (x) => x.row === rowIndex && x.column === columnIndex
-                  )
-                    ? styles.canBeMovedTo
-                    : null
-                }`}
-                onClick={onClick({ row: rowIndex, column: columnIndex })}
-              >
-                {piece === null
-                  ? null
-                  : piece.color === "PINK"
-                  ? pinkSVG
-                  : blueSVG}
-              </div>
-            ))
-            .reverse()
-        )
-        .flat()
-        .slice()
-        .reverse()}
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Game
+            state={state}
+            gameOver={gameOver}
+            selectedField={selectedField}
+            nextMoves={nextMoves ? nextMoves : []}
+            onFieldClick={onFieldClick}
+          />
+        }
+      />
+      <Route
+        path="/einstellungen"
+        element={
+          <Settings
+            startPlayer={startPlayer}
+            userColor={userColor}
+            difficulty={difficulty}
+            setStartPlayer={setStartPlayer}
+            setUserColor={setUserColor}
+            setDifficulty={setDifficulty}
+            onNewGame={onNewGame}
+          />
+        }
+      />
+    </Routes>
   );
 }
 

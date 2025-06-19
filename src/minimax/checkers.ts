@@ -1,5 +1,4 @@
-import { invertColor, type Color } from "../types/Color";
-import { invertPlayer } from "../types/Player";
+import { type Player, invertPlayer } from "../types/Player";
 import {
   add,
   equals,
@@ -12,7 +11,19 @@ import {
   type Vector2D,
 } from "../types/Vector2D";
 import { minimax, type Node } from "./minimax";
-import type { Player } from "../types/Player";
+
+type Color = "PINK" | "BLUE";
+
+function invertColor(color: Color): Color {
+  return color === "PINK" ? "BLUE" : "PINK";
+}
+
+function invertColorIfDefined(color: Color | undefined): Color | undefined {
+  if (!color) {
+    return undefined;
+  }
+  return invertColor(color);
+}
 
 type Piece = { color: Color; promoted: boolean };
 type Move = { start: Vector2D; end: Vector2D; isCapture: boolean };
@@ -28,7 +39,7 @@ function allowedDirections(piece: Piece): Vector2D[] {
 }
 
 class Board {
-  private pieces: (Piece | null)[][];
+  public pieces: (Piece | null)[][];
 
   constructor(pieces: (Piece | null)[][]) {
     this.pieces = pieces;
@@ -320,5 +331,5 @@ function bestMove(state: State, maxDepth: number): Move | null {
   return moveScoreTable.sort((a, b) => b.score - a.score)[0].move;
 }
 
-export type { Piece, Move };
+export { type Color, type Piece, type Move, invertColor, invertColorIfDefined };
 export { Board, START_POSITION, State, bestMove };

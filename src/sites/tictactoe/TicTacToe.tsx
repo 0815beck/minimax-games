@@ -1,41 +1,40 @@
 import { useState, useEffect } from "react";
-import type { Difficulty } from "../../minimax/tictactoe";
-import type { Symbol, Player, Position } from "../../minimax/tictactoe";
-import { invertPlayer, invertSymbol } from "../../minimax/tictactoe";
 import type { MouseEvent } from "react";
-import { bestMove, getWinningSymbol } from "../../minimax/tictactoe";
-import Game from "./game/Game";
 import { useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
+import {
+  invertSymbolIfExists,
+  START_POSITION,
+  type Difficulty,
+  type Move,
+} from "../../minimax/tictactoe";
+import { type Player } from "../../types/Player";
+import { type Symbol } from "../../minimax/tictactoe";
+import { State, bestMove } from "../../minimax/tictactoe";
+import Game from "./game/Game";
 import Settings from "./settings/Settings";
+import type { Vector2D } from "../../types/Vector2D";
 
 function TicTacToe() {
-  const [startPlayer, setStartPlayer] = useState<Player | null>(null);
-  const [userSymbol, setUserSymbol] = useState<Symbol | null>(null);
-  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [startPlayer, setStartPlayer] = useState<Player | undefined>(undefined);
+  const [userSymbol, setUserSymbol] = useState<Symbol | undefined>(undefined);
+  const [difficulty, setDifficulty] = useState<Difficulty | undefined>(
+    undefined
+  );
+  const [state, setState] = useState<State | undefined>(undefined);
 
-  const [nextPlayer, setNextPlayer] = useState<Player | null>("HUMAN");
-  const [nextSymbol, setNextSymbol] = useState<Symbol | null>("X");
-  const [gameOver, setGameOver] = useState<boolean>(false);
-  const [board, setBoard] = useState<(Symbol | null)[][]>([
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ]);
+  const startSymbol =
+    startPlayer === "HUMAN" ? userSymbol : invertSymbolIfExists(userSymbol);
+  const gameOver: boolean = state ? state.isLeaf() : true;
+  const navigate = useNavigate();
 
-  let navigate = useNavigate();
   useEffect(() => {
     if (!startPlayer || !userSymbol || !difficulty) {
       navigate("/tictactoe/einstellungen");
       return;
     }
-    if (!nextPlayer) {
-      setNextPlayer(startPlayer);
-    }
-    if (!nextSymbol) {
-      setNextSymbol(
-        startPlayer === "HUMAN" ? userSymbol : invertSymbol(userSymbol!)
-      );
+    if (!state) {
+      setState(new State(START_POSITION, startSymbol!, startPlayer));
     }
   }, []);
 
@@ -44,55 +43,45 @@ function TicTacToe() {
       navigate("/tictactoe/einstellungen");
       return;
     }
-    const newBoard = board.map((_) => [null, null, null]);
-    setBoard(newBoard);
-    setNextPlayer(startPlayer);
-    setNextSymbol(
-      startPlayer === "HUMAN" ? userSymbol : invertSymbol(userSymbol!)
-    );
-    setGameOver(false);
+    setState(new State(START_POSITION, startSymbol!, startPlayer));
     navigate("/tictactoe");
   };
 
-  const onFieldClick = (position: Position) => {
+  const onFieldClick = (position: Vector2D) => {
     return (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      if (!nextPlayer || !nextSymbol || gameOver) {
+      if (!state?.nextPlayer || !state.nextSymbol || gameOver) {
         return;
       }
-      const newBoard = board.map((row) => [...row]);
-      newBoard[position.row][position.column] = nextSymbol;
-      setNextPlayer(invertPlayer(nextPlayer!));
-      setNextSymbol(invertSymbol(nextSymbol!));
-      setBoard(newBoard);
-      setGameOver(getWinningSymbol(newBoard) !== null);
+      const newState = state.copy();
+      const move: Move = { position, symbol: state.nextSymbol };
+      newState.applyMove(move);
+      setState(newState);
     };
   };
 
   useEffect(() => {
-    if (nextPlayer !== "MACHINE" || gameOver || !nextSymbol) {
+    if (
+      !state ||
+      state.nextPlayer !== "MACHINE" ||
+      gameOver ||
+      !state.nextSymbol
+    ) {
       return;
     }
-    const machineMove = bestMove(board, nextSymbol);
-    const newBoard = board.map((row) => [...row]);
-    newBoard[machineMove.row][machineMove.column] = nextSymbol;
-    setNextPlayer(invertPlayer(nextPlayer!));
-    setNextSymbol(invertSymbol(nextSymbol!));
-    setGameOver(getWinningSymbol(newBoard) !== null);
-    setBoard(newBoard);
-  }, [board]);
+    const searchDepth = difficulty === "HARD" ? 9 : 2;
+    const machineMove = bestMove(state, searchDepth);
+    const newState = state.copy();
+    newState.applyMove(machineMove);
+    setState(newState);
+  }, [state]);
 
   return (
     <Routes>
       <Route
         path="/"
         element={
-          <Game
-            nextPlayer={nextPlayer}
-            gameOver={gameOver}
-            board={board}
-            onFieldClick={onFieldClick}
-          />
+          <Game state={state} gameOver={gameOver} onFieldClick={onFieldClick} />
         }
       />
       <Route

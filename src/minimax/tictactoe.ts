@@ -1,69 +1,103 @@
 import { invertPlayer, type Player } from "../types/Player";
+import type { Vector2D } from "../types/Vector2D";
 import type { Node } from "./minimax";
 import { minimax } from "./minimax";
 
-type Symbol = "X" | "O";
-type Position = { row: number; column: number };
-type Board = (Symbol | null)[][];
 type Difficulty = "EASY" | "HARD";
+type Symbol = "X" | "O";
 
 function invertSymbol(symbol: Symbol): Symbol {
   return symbol === "X" ? "O" : "X";
 }
 
-function getWinningSymbol(board: Board): Symbol | "DRAW" | null {
-  // check if a row, column or diagonal is filled with the same symbol
-  for (let row = 0; row < 3; row++) {
-    if (
-      board[row][0] === board[row][1] &&
-      board[row][1] === board[row][2] &&
-      board[row][0] !== null
-    ) {
-      return board[row][0];
-    }
+function invertSymbolIfExists(symbol: Symbol | undefined): Symbol | undefined {
+  if (!symbol) {
+    return undefined;
+  }
+  return invertSymbol(symbol);
+}
+
+type Move = { position: Vector2D; symbol: Symbol };
+
+class Board {
+  public symbols: (Symbol | null)[][];
+
+  constructor(symbols: (Symbol | null)[][]) {
+    this.symbols = symbols;
   }
 
-  for (let column = 0; column < 3; column++) {
-    if (
-      board[0][column] === board[1][column] &&
-      board[1][column] === board[2][column] &&
-      board[0][column] !== null
-    ) {
-      return board[0][column];
-    }
-  }
-
-  if (
-    board[0][0] === board[1][1] &&
-    board[1][1] === board[2][2] &&
-    board[0][0] !== null
-  ) {
-    return board[0][0];
-  }
-
-  if (
-    board[2][0] === board[1][1] &&
-    board[1][1] === board[0][2] &&
-    board[2][0] !== null
-  ) {
-    return board[2][0];
-  }
-
-  //check if the board is full
-  let boardIsFull = true;
-  for (let row = 0; row < 3; row++) {
-    for (let column = 0; column < 3; column++) {
-      if (board[row][column] === null) {
-        boardIsFull = false;
+  getWinningSymbol(): Symbol | "DRAW" | null {
+    // check if a row, column or diagonal is filled with the same symbol
+    for (let row = 0; row < 3; row++) {
+      if (
+        this.symbols[row][0] === this.symbols[row][1] &&
+        this.symbols[row][1] === this.symbols[row][2] &&
+        this.symbols[row][0] !== null
+      ) {
+        return this.symbols[row][0];
       }
     }
-  }
-  if (boardIsFull) {
-    return "DRAW";
+
+    for (let column = 0; column < 3; column++) {
+      if (
+        this.symbols[0][column] === this.symbols[1][column] &&
+        this.symbols[1][column] === this.symbols[2][column] &&
+        this.symbols[0][column] !== null
+      ) {
+        return this.symbols[0][column];
+      }
+    }
+
+    if (
+      this.symbols[0][0] === this.symbols[1][1] &&
+      this.symbols[1][1] === this.symbols[2][2] &&
+      this.symbols[0][0] !== null
+    ) {
+      return this.symbols[0][0];
+    }
+
+    if (
+      this.symbols[2][0] === this.symbols[1][1] &&
+      this.symbols[1][1] === this.symbols[0][2] &&
+      this.symbols[2][0] !== null
+    ) {
+      return this.symbols[2][0];
+    }
+
+    //check if the board is full
+    let boardIsFull = true;
+    for (let row = 0; row < 3; row++) {
+      for (let column = 0; column < 3; column++) {
+        if (this.symbols[row][column] === null) {
+          boardIsFull = false;
+        }
+      }
+    }
+    if (boardIsFull) {
+      return "DRAW";
+    }
+
+    return null;
   }
 
-  return null;
+  copy(): Board {
+    const newGrid = this.symbols.map((row) => [...row]);
+    return new Board(newGrid);
+  }
+
+  applyMove(move: Move) {
+    if (this.symbols[move.position.row][move.position.column] !== null) {
+      return;
+    }
+    this.symbols[move.position.row][move.position.column] = move.symbol;
+  }
 }
+
+const START_POSITION = new Board([
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+]);
 
 class State implements Node<State> {
   public board: Board;
@@ -77,7 +111,17 @@ class State implements Node<State> {
   }
 
   isLeaf(): boolean {
-    return getWinningSymbol(this.board) !== null;
+    return this.board.getWinningSymbol() !== null;
+  }
+
+  copy(): State {
+    return new State(this.board.copy(), this.nextSymbol, this.nextPlayer);
+  }
+
+  applyMove(move: Move) {
+    this.board.applyMove(move);
+    this.nextPlayer = invertPlayer(this.nextPlayer);
+    this.nextSymbol = invertSymbol(this.nextSymbol);
   }
 
   *[Symbol.iterator](): Iterator<State> {
@@ -85,10 +129,12 @@ class State implements Node<State> {
 
     for (let row = 0; row < 3; row++) {
       for (let column = 0; column < 3; column++) {
-        if (this.board[row][column] === null) {
-          const newBoard = this.board.map((row) => [...row]);
-          newBoard[row][column] = this.nextSymbol;
-
+        if (this.board.symbols[row][column] === null) {
+          const newBoard = this.board.copy();
+          newBoard.applyMove({
+            position: { row, column },
+            symbol: this.nextSymbol,
+          });
           yield new State(
             newBoard,
             invertSymbol(this.nextSymbol),
@@ -104,7 +150,7 @@ function evaluation(state: State): number {
   if (!state.isLeaf()) {
     return 0;
   }
-  if (getWinningSymbol(state.board) === "DRAW") {
+  if (state.board.getWinningSymbol() === "DRAW") {
     return 0;
   }
   if (state.nextPlayer === "HUMAN") {
@@ -116,33 +162,33 @@ function evaluation(state: State): number {
   return 0;
 }
 
-function bestMove(board: (Symbol | null)[][], nextSymbol: Symbol) {
-  const positionScoreTable: { position: Position; score: number }[] = [];
+function bestMove(state: State, maxDepth: number) {
+  const moveScoreTable: { move: Move; score: number }[] = [];
 
   for (let row = 0; row < 3; row++) {
     for (let column = 0; column < 3; column++) {
-      if (board[row][column] === null) {
-        board[row][column] = nextSymbol;
+      if (state.board.symbols[row][column] === null) {
+        state.board.symbols[row][column] = state.nextSymbol;
         const score = minimax<State>(
-          new State(board, invertSymbol(nextSymbol), "HUMAN"),
+          new State(
+            state.board.copy(),
+            invertSymbol(state.nextSymbol),
+            invertPlayer(state.nextPlayer)
+          ),
           evaluation,
-          9,
+          maxDepth,
           false
         );
-        board[row][column] = null;
-        positionScoreTable.push({ position: { row, column }, score });
+        moveScoreTable.push({
+          move: { position: { row, column }, symbol: state.nextSymbol },
+          score,
+        });
       }
     }
   }
 
-  console.log(
-    "[Info] Minimax has evaluated all possible next moves and assigned them scores." +
-      " Minimax results look as follows: ",
-    positionScoreTable
-  );
-
-  return positionScoreTable.sort((a, b) => b.score - a.score)[0].position;
+  return moveScoreTable.sort((a, b) => b.score - a.score)[0].move;
 }
 
-export type { Symbol, Position, Player, Board, Difficulty };
-export { bestMove, getWinningSymbol, invertSymbol, invertPlayer };
+export { type Difficulty, type Symbol, invertSymbol, invertSymbolIfExists };
+export { type Move, Board, START_POSITION, State, bestMove };

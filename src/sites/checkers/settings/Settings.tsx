@@ -1,15 +1,16 @@
-import { type Symbol, type Difficulty } from "../../../minimax/tictactoe";
-import styles from "./Settings.module.css";
 import BinarySetting from "../../../components/binarySetting/BinarySetting";
 import Button from "../../../components/button/Button";
+import type { Color } from "../../../minimax/checkers";
+import type { Difficulty } from "../../../minimax/tictactoe";
 import type { Player } from "../../../types/Player";
+import styles from "./Settings.module.css";
 
 function Settings(props: {
   startPlayer: Player | undefined;
-  userSymbol: Symbol | undefined;
+  userColor: Color | undefined;
   difficulty: Difficulty | undefined;
   setStartPlayer: React.Dispatch<React.SetStateAction<Player | undefined>>;
-  setUserSymbol: React.Dispatch<React.SetStateAction<Symbol | undefined>>;
+  setUserColor: React.Dispatch<React.SetStateAction<Color | undefined>>;
   setDifficulty: React.Dispatch<React.SetStateAction<Difficulty | undefined>>;
   onNewGame: () => void;
 }) {
@@ -31,15 +32,15 @@ function Settings(props: {
           }
         />
         <BinarySetting
-          settingLabel="Welches Symbol möchtest du?"
-          labelLeft="X"
-          labelRight="O"
-          setLeft={() => props.setUserSymbol("X")}
-          setRight={() => props.setUserSymbol("O")}
+          settingLabel="Welche Farbe möchtest du?"
+          labelLeft="Pink"
+          labelRight="Blau"
+          setLeft={() => props.setUserColor("PINK")}
+          setRight={() => props.setUserColor("BLUE")}
           selected={
-            props.userSymbol === "X"
+            props.userColor === "PINK"
               ? "LEFT"
-              : props.userSymbol !== null
+              : props.userColor !== null
               ? "RIGHT"
               : null
           }
