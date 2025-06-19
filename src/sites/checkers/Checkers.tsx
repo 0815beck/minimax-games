@@ -30,16 +30,19 @@ function Checkers() {
     startPlayer === "HUMAN" ? userColor : invertColorIfDefined(userColor);
   const gameOver = state ? state.isLeaf() : true;
   const nextMoves = state?.nextMoves();
-  const searchDepth = difficulty === "HARD" ? 20 : 10;
+  const searchDepth = difficulty === "HARD" ? 10 : 5;
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!startPlayer || !userColor || !searchDepth) {
+    if (!startPlayer || !userColor || !difficulty) {
       navigate("/dame/einstellungen");
       return;
     }
     if (!state) {
+      const newState = new State(START_POSITION, startColor!, startPlayer, 0);
+      const snapshot = JSON.stringify(newState);
+      console.log("Setting new state: ", snapshot);
       setState(new State(START_POSITION, startColor!, startPlayer, 0));
     }
   }, []);
@@ -49,7 +52,10 @@ function Checkers() {
       navigate("/dame/einstellungen");
       return;
     }
-    setState(new State(START_POSITION, startColor!, startPlayer, 0));
+    const newState = new State(START_POSITION, startColor!, startPlayer, 0);
+    const snapshot = JSON.stringify(newState);
+    console.log("Setting new state: ", snapshot);
+    setState(newState);
     navigate("/dame");
   };
 
@@ -64,11 +70,16 @@ function Checkers() {
         (move) =>
           equals(move.start, selectedField) && equals(move.end, position)
       );
-      if (userMove && state) {
+      if (!userMove) {
+        setSelectedField(position);
+        return;
+      }
+      if (userMove !== undefined && state !== undefined) {
         const newState = state.copy();
         newState.applyMove(userMove);
         setState(newState);
         setSelectedField(undefined);
+        console.log("User move applied");
       }
     };
 
@@ -76,13 +87,16 @@ function Checkers() {
     if (!state || state.nextPlayer !== "MACHINE" || gameOver || !searchDepth) {
       return;
     }
-    const machineMove = bestMove(state, searchDepth);
-    if (!machineMove) {
-      return;
-    }
-    const newState = state.copy();
-    newState.applyMove(machineMove);
-    setState(newState);
+
+    setTimeout(() => {
+      const machineMove = bestMove(state, searchDepth);
+      if (!machineMove) return;
+      const newState = state.copy();
+      newState.applyMove(machineMove);
+      const snapshot = JSON.stringify(newState);
+      console.log("Setting new state: ", snapshot);
+      setState(newState);
+    }, 0);
   }, [state]);
 
   return (

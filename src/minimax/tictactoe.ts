@@ -118,10 +118,11 @@ class State implements Node<State> {
     return new State(this.board.copy(), this.nextSymbol, this.nextPlayer);
   }
 
-  applyMove(move: Move) {
+  applyMove(move: Move): State {
     this.board.applyMove(move);
     this.nextPlayer = invertPlayer(this.nextPlayer);
     this.nextSymbol = invertSymbol(this.nextSymbol);
+    return this;
   }
 
   *[Symbol.iterator](): Iterator<State> {
@@ -168,17 +169,11 @@ function bestMove(state: State, maxDepth: number) {
   for (let row = 0; row < 3; row++) {
     for (let column = 0; column < 3; column++) {
       if (state.board.symbols[row][column] === null) {
-        state.board.symbols[row][column] = state.nextSymbol;
-        const score = minimax<State>(
-          new State(
-            state.board.copy(),
-            invertSymbol(state.nextSymbol),
-            invertPlayer(state.nextPlayer)
-          ),
-          evaluation,
-          maxDepth,
-          false
-        );
+        const childState = state.copy().applyMove({
+          position: { row, column },
+          symbol: state.nextSymbol,
+        });
+        const score = minimax<State>(childState, evaluation, maxDepth, false);
         moveScoreTable.push({
           move: { position: { row, column }, symbol: state.nextSymbol },
           score,

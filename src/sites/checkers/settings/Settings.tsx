@@ -26,9 +26,9 @@ function Settings(props: {
           selected={
             props.startPlayer === "HUMAN"
               ? "LEFT"
-              : props.startPlayer !== null
+              : props.startPlayer !== undefined
               ? "RIGHT"
-              : null
+              : undefined
           }
         />
         <BinarySetting
@@ -40,9 +40,9 @@ function Settings(props: {
           selected={
             props.userColor === "PINK"
               ? "LEFT"
-              : props.userColor !== null
+              : props.userColor !== undefined
               ? "RIGHT"
-              : null
+              : undefined
           }
         />
         <BinarySetting
@@ -54,9 +54,9 @@ function Settings(props: {
           selected={
             props.difficulty === "EASY"
               ? "LEFT"
-              : props.difficulty !== null
+              : props.difficulty !== undefined
               ? "RIGHT"
-              : null
+              : undefined
           }
         />
 

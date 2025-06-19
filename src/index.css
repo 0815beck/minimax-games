@@ -19,6 +19,12 @@ main,
   font-family: var(--font);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 button,
 input,
 label,

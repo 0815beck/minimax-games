@@ -58,6 +58,9 @@ class Board {
   }
 
   deletePiece(x: Vector2D): void {
+    if (!Board.onBoard(x)) {
+      console.log("[Error]: tried to delete symbol out of bounds: ", x);
+    }
     this.pieces[x.row][x.column] = null;
   }
 
@@ -69,7 +72,7 @@ class Board {
     const piece = this.getPiece(move.start);
     return piece &&
       !piece.promoted &&
-      (move.end.row === 0 || move.end.row === 0)
+      (move.end.row === 0 || move.end.row === 7)
       ? true
       : false;
   }
@@ -85,13 +88,14 @@ class Board {
     if (!piece) {
       return;
     }
+    const isPromoting = this.isPromoting(move);
+    this.setPiece(move.end, isPromoting ? { ...piece, promoted: true } : piece);
     this.deletePiece(move.start);
-    this.setPiece(
-      move.end,
-      this.isPromoting(move) ? { ...piece, promoted: true } : piece
-    );
     if (move.isCapture) {
-      const middle = add(move.start, scale(2, subtract(move.end, move.start)));
+      const middle = add(
+        move.start,
+        scale(0.5, subtract(move.end, move.start))
+      );
       this.deletePiece(middle);
     }
   }
@@ -178,6 +182,7 @@ class State implements Node<State> {
   public nextColor: Color;
   public nextPlayer: Player;
   public lastCapture: number;
+  private mustMoveNext: Vector2D | undefined;
 
   constructor(
     board: Board,
@@ -192,7 +197,7 @@ class State implements Node<State> {
   }
 
   nextMoves(): Move[] {
-    const moves: Move[] = [];
+    let moves: Move[] = [];
     let atLeastOneCapture = false;
 
     for (let { piece, position } of this.board) {
@@ -208,6 +213,7 @@ class State implements Node<State> {
         const inBetween: Vector2D = add(start, direction);
         if (
           !Board.onBoard(end) ||
+          !Board.onBoard(inBetween) ||
           this.board.getPiece(end) !== null ||
           this.board.getPiece(inBetween) === null ||
           this.board.getPiece(inBetween)?.color === this.nextColor
@@ -225,7 +231,10 @@ class State implements Node<State> {
       // Attempt standard (non-capturing) moves
       for (let direction of directions) {
         const end = add(start, direction);
-        if (this.board.getPiece(end) === null && Board.onBoard(end)) {
+        if (!Board.onBoard(end)) {
+          continue;
+        }
+        if (this.board.getPiece(end) === null) {
           moves.push({ start, end, isCapture: false });
         }
       }
@@ -242,7 +251,15 @@ class State implements Node<State> {
       return score;
     };
 
-    return moves.sort((a, b) => heuristicScore(b) - heuristicScore(a));
+    if (atLeastOneCapture) {
+      moves = moves.filter((move) => move.isCapture);
+    }
+    if (this.mustMoveNext) {
+      moves = moves.filter((move) => equals(move.start, this.mustMoveNext!));
+    }
+    moves = moves.sort((a, b) => heuristicScore(b) - heuristicScore(a));
+
+    return moves;
   }
 
   isLeaf(): boolean {
@@ -260,6 +277,7 @@ class State implements Node<State> {
     ) {
       // this move is the beginning of a capture chain
       this.lastCapture = 0;
+      this.mustMoveNext = move.end;
       return;
     }
     if (move.isCapture) {
@@ -269,6 +287,7 @@ class State implements Node<State> {
     }
     this.nextColor = invertColor(this.nextColor);
     this.nextPlayer = invertPlayer(this.nextPlayer);
+    this.mustMoveNext = undefined;
   }
 
   copy(): State {

@@ -34,7 +34,8 @@ function TicTacToe() {
       return;
     }
     if (!state) {
-      setState(new State(START_POSITION, startSymbol!, startPlayer));
+      const newState = new State(START_POSITION, startSymbol!, startPlayer);
+      setState(newState);
     }
   }, []);
 
@@ -43,7 +44,8 @@ function TicTacToe() {
       navigate("/tictactoe/einstellungen");
       return;
     }
-    setState(new State(START_POSITION, startSymbol!, startPlayer));
+    const newState = new State(START_POSITION, startSymbol!, startPlayer);
+    setState(newState);
     navigate("/tictactoe");
   };
 

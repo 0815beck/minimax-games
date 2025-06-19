@@ -6,7 +6,7 @@ function BinarySetting(props: {
   labelRight: string;
   setLeft: () => void;
   setRight: () => void;
-  selected: "LEFT" | "RIGHT" | null;
+  selected: "LEFT" | "RIGHT" | undefined;
 }) {
   return (
     <div className={styles.setting}>
@@ -16,7 +16,7 @@ function BinarySetting(props: {
           className={`${styles.settingBtn} ${
             props.selected === "LEFT"
               ? styles.selected
-              : props.selected !== null
+              : props.selected !== undefined
               ? styles.notSelected
               : ""
           }`}
@@ -29,7 +29,7 @@ function BinarySetting(props: {
           className={`${styles.settingBtn} ${
             props.selected === "RIGHT"
               ? styles.selected
-              : props.selected !== null
+              : props.selected !== undefined
               ? styles.notSelected
               : ""
           }`}
