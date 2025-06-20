@@ -186,4 +186,4 @@ function bestMove(state: State, maxDepth: number) {
 }
 
 export { type Difficulty, type Symbol, invertSymbol, invertSymbolIfExists };
-export { type Move, Board, START_POSITION, State, bestMove };
+export { type Move, Board, START_POSITION, State, bestMove, evaluation };

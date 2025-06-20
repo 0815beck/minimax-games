@@ -10,7 +10,9 @@ function minimax<State extends Node<State>>(
   alpha: number = -Infinity,
   beta: number = +Infinity
 ): number {
+  console.log("Was geht?");
   if (maxDepth === 0 || state.isLeaf()) {
+    console.log("Hello");
     return evaluation(state);
   }
 
