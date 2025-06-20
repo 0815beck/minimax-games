@@ -43,9 +43,16 @@
     height: 100%;
     width: auto;
     max-width: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 700px;
   }
 
   #extraInfo {
     align-self: flex-end;
+    flex: 1;
+    max-width: 520px;
+    min-width: 150px;
   }
 }

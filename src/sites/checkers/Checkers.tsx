@@ -1,4 +1,4 @@
-import { useState, useEffect, type MouseEvent } from "react";
+import { useState, useEffect, type MouseEvent, useRef } from "react";
 import { type Player } from "../../types/Player";
 import {
   invertColorIfDefined,
@@ -6,6 +6,7 @@ import {
   type Color,
   START_POSITION,
   bestMove,
+  type Move,
 } from "../../minimax/checkers";
 
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -34,6 +35,21 @@ function Checkers() {
 
   const navigate = useNavigate();
 
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const workerUrl = new URL(
+      "../../workers/minimaxWorker.ts",
+      import.meta.url
+    );
+    const worker = new Worker(workerUrl, { type: "module" });
+    workerRef.current = worker;
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
   useEffect(() => {
     if (!startPlayer || !userColor || !difficulty) {
       navigate("/dame/einstellungen");
@@ -41,9 +57,7 @@ function Checkers() {
     }
     if (!state) {
       const newState = new State(START_POSITION, startColor!, startPlayer, 0);
-      const snapshot = JSON.stringify(newState);
-      console.log("Setting new state: ", snapshot);
-      setState(new State(START_POSITION, startColor!, startPlayer, 0));
+      setState(newState);
     }
   }, []);
 
@@ -53,8 +67,6 @@ function Checkers() {
       return;
     }
     const newState = new State(START_POSITION, startColor!, startPlayer, 0);
-    const snapshot = JSON.stringify(newState);
-    console.log("Setting new state: ", snapshot);
     setState(newState);
     navigate("/dame");
   };
@@ -79,24 +91,39 @@ function Checkers() {
         newState.applyMove(userMove);
         setState(newState);
         setSelectedField(undefined);
-        console.log("User move applied");
       }
     };
 
   useEffect(() => {
-    if (!state || state.nextPlayer !== "MACHINE" || gameOver || !searchDepth) {
-      return;
-    }
+    if (!state || !searchDepth) return;
+    if (state.nextPlayer !== "MACHINE" || gameOver) return;
+    const worker = workerRef.current;
+    if (!worker) return;
 
-    setTimeout(() => {
-      const machineMove = bestMove(state, searchDepth);
-      if (!machineMove) return;
+    const handleMachineMove = (event: MessageEvent<Move>) => {
+      if (state?.nextPlayer !== "MACHINE") {
+        return;
+      }
+      const move = event.data;
       const newState = state.copy();
-      newState.applyMove(machineMove);
-      const snapshot = JSON.stringify(newState);
-      console.log("Setting new state: ", snapshot);
+      newState.applyMove(move);
       setState(newState);
-    }, 0);
+    };
+
+    worker.addEventListener("message", handleMachineMove);
+
+    worker.postMessage({
+      pieces: state.board.pieces,
+      nextColor: state.nextColor,
+      nextPlayer: state.nextPlayer,
+      lastCapture: state.lastCapture,
+      mustMoveNext: state.mustMoveNext,
+      searchDepth,
+    });
+
+    return () => {
+      worker.removeEventListener("message", handleMachineMove);
+    };
   }, [state]);
 
   return (
@@ -105,6 +132,7 @@ function Checkers() {
         path="/"
         element={
           <Game
+            userColor={userColor}
             state={state}
             gameOver={gameOver}
             selectedField={selectedField}

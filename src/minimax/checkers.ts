@@ -182,18 +182,20 @@ class State implements Node<State> {
   public nextColor: Color;
   public nextPlayer: Player;
   public lastCapture: number;
-  private mustMoveNext: Vector2D | undefined;
+  public mustMoveNext: Vector2D | undefined;
 
   constructor(
     board: Board,
     nextColor: Color,
     nextPlayer: Player,
-    lastCapture: number
+    lastCapture: number,
+    mustMoveNext: Vector2D | undefined = undefined
   ) {
     this.board = board;
     this.nextColor = nextColor;
     this.nextPlayer = nextPlayer;
     this.lastCapture = lastCapture;
+    this.mustMoveNext = mustMoveNext;
   }
 
   nextMoves(): Move[] {
@@ -263,10 +265,23 @@ class State implements Node<State> {
   }
 
   isLeaf(): boolean {
-    if (this.lastCapture >= 30) {
+    if (this.lastCapture >= 50) {
       return true;
     }
     return this.nextMoves().length === 0;
+  }
+
+  getWinningPlayer(): Player | "DRAW" | null {
+    if (this.isLeaf()) {
+      if (this.lastCapture >= 50) {
+        return "DRAW";
+      } else if (this.nextPlayer === "HUMAN") {
+        return "MACHINE";
+      } else if (this.nextPlayer === "MACHINE") {
+        return "HUMAN";
+      }
+    }
+    return null;
   }
 
   applyMove(move: Move) {

@@ -49,5 +49,7 @@
 
   #extraInfo {
     align-self: flex-end;
+    flex: 1;
+    max-width: 520px;
   }
 }

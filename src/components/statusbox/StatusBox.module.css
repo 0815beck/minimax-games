@@ -31,7 +31,7 @@
   padding: 1rem 1.4rem 1rem 1.4rem;
   border-radius: 1rem 1rem 0 1rem;
   min-height: 6rem;
-  min-width: 15rem;
+  min-width: 12rem;
   background-color: var(--bg-color-light);
   flex: 1;
 }

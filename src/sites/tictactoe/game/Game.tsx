@@ -6,6 +6,7 @@ import type { Vector2D } from "../../../types/Vector2D";
 import StatusBox from "../../../components/statusbox/StatusBox";
 import Button from "../../../components/button/Button";
 import { Navigate, useNavigate } from "react-router-dom";
+import { message } from "./message";
 
 function Game(props: {
   state: State | undefined;
@@ -29,8 +30,11 @@ function Game(props: {
         />
       </div>
       <div id={styles.extraInfo}>
-        <StatusBox message={"Wir haben Spaß"} className={styles.statusBox} />
-        {true && (
+        <StatusBox
+          message={message(props.state, props.gameOver)}
+          className={styles.statusBox}
+        />
+        {props.gameOver && (
           <div id={styles.buttonGroup}>
             <Button
               label={"Nochmal"}
