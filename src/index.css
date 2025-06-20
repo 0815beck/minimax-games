@@ -1,3 +1,5 @@
+/* GLOBAL VARIABLES */
+
 :root {
   --pink: hsla(311, 100%, 66%, 1);
   --blue: hsla(184, 100%, 50%, 1);
@@ -8,15 +10,16 @@
   --purple-glow: hsla(280, 100%, 70%, 0.2);
   --purple-glow-inner: hsla(280, 100%, 80%, 0.1);
   --purple-glow-bright: hsla(280, 100%, 90%, 0.7);
-  --font: "Orbitron", monospace;
+  --font-orbitron: "Orbitron", monospace;
 }
 
-body,
-main,
-#root {
-  margin: 0;
-  min-height: 100dvh;
-  font-family: var(--font);
+/* LAYOUT */
+
+button {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  font: inherit;
 }
 
 *,
@@ -25,19 +28,17 @@ main,
   box-sizing: border-box;
 }
 
-button,
-input,
-label,
-p {
-  all: unset;
-}
-
-label {
-  display: block;
+html,
+body,
+main,
+#root {
+  margin: 0;
+  width: 100vw;
+  min-height: 100vh;
 }
 
 #root {
-  color: var(--text-color);
   background-color: var(--bg-color);
-  font-family: sans-serif;
+  color: var(--white);
+  font-family: var(--font-orbitron);
 }

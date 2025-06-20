@@ -1,17 +1,18 @@
 #container {
   container-type: inline-size;
-  container-name: statusBox;
+  container-name: container;
 }
 
 #statusBox {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 #speechBubble {
-  flex: 1;
   display: flex;
-  margin-bottom: 1rem;
+  flex: 1;
+  max-width: 50rem;
 }
 
 #speechBubble:after {
@@ -30,6 +31,7 @@
   padding: 1rem 1.4rem 1rem 1.4rem;
   border-radius: 1rem 1rem 0 1rem;
   min-height: 6rem;
+  min-width: 15rem;
   background-color: var(--bg-color-light);
   flex: 1;
 }
@@ -37,21 +39,16 @@
 #robotIcon {
   width: 3rem;
   height: 3rem;
+  min-width: 3rem;
+  min-height: 3rem;
   align-self: flex-end;
   overflow: visible;
 }
 
-@container (max-width: 700px) {
+@container (max-width: 400px) {
   #statusBox {
     flex-direction: column;
     gap: 0;
-  }
-
-  #speechBubble {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
   }
 
   #speechBubble:after {
@@ -63,6 +60,10 @@
     border-color: transparent var(--bg-color-light) transparent transparent;
     align-self: flex-end;
     margin-right: 3rem;
+  }
+
+  #speechBubble {
+    flex-direction: column;
   }
 
   #bubbleContentBox {

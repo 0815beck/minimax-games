@@ -1,19 +1,19 @@
 .btn {
-  --neon: var(--blue);
-  align-self: center;
-  padding: 0.75rem 2rem;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  text-decoration: none;
   font-size: 1rem;
-  background: transparent;
-  border: 2px solid var(--neon);
-  color: var(--neon);
-  box-shadow: inset 0 0 0.75em var(--neon), 0 0 1em var(--neon);
-  text-shadow: 0 0 0.3em var(--neon);
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 0 10px var(--blue), 0 0 20px var(--blue) inset;
+  min-width: 12rem;
+  text-align: center;
 }
 
-.btn:hover,
-.btn:focus {
-  transform: scale(1.05);
-  filter: brightness(1.3);
+.btn:focus,
+.btn:hover {
+  background-color: var(--blue);
+  color: #000;
+  box-shadow: 0 0 20px var(--blue), 0 0 40px var(--blue);
 }
