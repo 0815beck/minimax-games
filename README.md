@@ -1,10 +1,6 @@
 # MINIMAX GAMES
 
-Play complete information games against the sassy robot Minimax in a Neo-Futuristic Web-Application.
-
-## Test it online
-
-The app can currently be accessed at:
+Play complete information games against the sassy robot Minimax in a Neo-Futuristic Web-Application. The app can currently be accessed at:
 
   https://nico.physik.cool/minimax
 
