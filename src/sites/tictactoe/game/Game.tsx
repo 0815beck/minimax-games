@@ -5,7 +5,7 @@ import Board from "../../../components/tictactoe/board/Board";
 import type { Vector2D } from "../../../types/Vector2D";
 import StatusBox from "../../../components/statusbox/StatusBox";
 import Button from "../../../components/button/Button";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { message } from "./message";
 
 function Game(props: {

@@ -1,12 +1,6 @@
 import type { MouseEvent } from "react";
-import {
-  Board,
-  type Color,
-  type Move,
-  type Piece,
-  type State,
-} from "../../../minimax/checkers";
-import { equals, type Vector2D } from "../../../types/Vector2D";
+import { type Color, type Move, type State } from "../../../minimax/checkers";
+import { type Vector2D } from "../../../types/Vector2D";
 import styles from "./Game.module.css";
 import StatusBox from "../../../components/statusbox/StatusBox";
 import Button from "../../../components/button/Button";

@@ -5,7 +5,6 @@ import {
   State,
   type Color,
   START_POSITION,
-  bestMove,
   type Move,
 } from "../../minimax/checkers";
 
@@ -38,11 +37,10 @@ function Checkers() {
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const workerUrl = new URL(
-      "../../workers/minimaxWorker.ts",
-      import.meta.url
+    const worker = new Worker(
+      new URL("../../workers/minimaxWorker", import.meta.url),
+      { type: "module" }
     );
-    const worker = new Worker(workerUrl, { type: "module" });
     workerRef.current = worker;
 
     return () => {

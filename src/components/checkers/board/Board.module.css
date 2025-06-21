@@ -17,7 +17,7 @@
 }
 
 .field {
-  width: 100%;
+  display: block;
   aspect-ratio: 1 / 1;
   box-shadow: 0 0 0.5rem var(--purple-glow),
     inset 0 0 0.5rem var(--purple-glow-inner);

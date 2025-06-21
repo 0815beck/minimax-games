@@ -34,11 +34,15 @@ main,
 #root {
   margin: 0;
   width: 100vw;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #root {
   background-color: var(--bg-color);
   color: var(--white);
   font-family: var(--font-orbitron);
+}
+
+svg {
+  display: block;
 }
