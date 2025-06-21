@@ -2,6 +2,14 @@
 
 Play complete information games against the sassy robot Minimax in a Neo-Futuristic Web-Application.
 
+## Test it online
+
+The app can currently be accessed at:
+
+  https://nico.physik.cool/minimax
+
+## How it works
+
 Minimax uses the minimax algorithm with alpha-beta pruning to play. This algorithm can be used
 on all complete information games.
 
